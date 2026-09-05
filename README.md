@@ -124,18 +124,18 @@ For each prefrontal node $n \in \{F3, F4, AFz, Fpz\}$, the 120-edge directed $i\
 
 $$\text{traj}_x(n, k) = -\frac{\sum_{p=1}^{120} \mathbf{iPLV}_{n,k}(p) \cdot \Delta X_p}{\sum_{p=1}^{120} |\mathbf{iPLV}_{n,k}(p)| + \epsilon}, \quad \text{traj}_y(n, k) = -\frac{\sum_{p=1}^{120} \mathbf{iPLV}_{n,k}(p) \cdot \Delta Y_p}{\sum_{p=1}^{120} |\mathbf{iPLV}_{n,k}(p)| + \epsilon}$$
 
-$$\vec{L}_n = \begin{bmatrix} \text{clamp}\left(\frac{\text{traj}\_x[n, 31] - \text{traj}\_x[n, 0]}{6.0}, -1, 1\right) \\\\ \text{clamp}\left(\frac{\text{traj}\_y[n, 31] - \text{traj}\_y[n, 0]}{6.0}, -1, 1\right) \end{bmatrix}$$
+$$\vec{L}_n = \begin{bmatrix} \mathrm{clamp}\left(\frac{\mathrm{traj}\_x[n, 31] - \mathrm{traj}\_x[n, 0]}{6.0}, -1, 1\right) \\\\ \mathrm{clamp}\left(\frac{\mathrm{traj}\_y[n, 31] - \text{traj}\_y[n, 0]}{6.0}, -1, 1\right) \end{bmatrix}$$
 
-$$rx_n = \text{clamp}\left( 2.5 \cdot \frac{(\bar{x}_{n, 11..21} - x_{\text{chord}, n}) \cdot (-ly_n) + (\bar{y}_{n, 11..21} - y_{\text{chord}, n}) \cdot lx_n}{|\vec{L}_n| + \epsilon}, -1.0, 1.0 \right)$$
+$$rx_n = \mathrm{clamp}\left( 2.5 \cdot \frac{(\bar{x}_{n, 11..21} - x_{\mathrm{chord}, n}) \cdot (-ly_n) + (\bar{y}_{n, 11..21} - y_{\mathrm{chord}, n}) \cdot lx_n}{|\vec{L}_n| + \epsilon}, -1.0, 1.0 \right)$$
 
-$$ry_n = \text{clamp}\left( 2.0 \cdot \frac{\sum_{k=22}^{31} |\mathbf{iPLV}_{n, k}| - \sum_{k=0}^{10} |\mathbf{iPLV}_{n, k}|}{\sum_{k=22}^{31} |\mathbf{iPLV}_{n, k}| + \sum_{k=0}^{10} |\mathbf{iPLV}_{n, k}| + \epsilon}, -1.0, 1.0 \right)$$
+$$ry_n = \mathrm{clamp}\left( 2.0 \cdot \frac{\sum_{k=22}^{31} |\mathbf{iPLV}_{n, k}| - \sum_{k=0}^{10} |\mathbf{iPLV}_{n, k}|}{\sum_{k=22}^{31} |\mathbf{iPLV}_{n, k}| + \sum_{k=0}^{10} |\mathbf{iPLV}_{n, k}| + \epsilon}, -1.0, 1.0 \right)$$
 
 $$\mathbf{X}_{16\text{D}} = \begin{bmatrix} \mathbf{K}_{F3} \\ \mathbf{K}_{F4} \\ \mathbf{K}_{AFz} \\ \mathbf{K}_{Fpz} \end{bmatrix} \in \mathbb{R}^{4 \times 4}, \quad \text{where } \mathbf{K}_n = [lx_n, ly_n, rx_n, ry_n]$$
 
 ### 2.2 The Unquantized Meaning Index ($M(t)$)
 The Meaning Index $M(t) \in [0.0, 1.0]$ tracks global prefrontal network coherence:
 
-$$M(t) = \text{clamp}\left( 1.3 \cdot R_{\text{sync}}(t) - 0.2, 0.0, 1.0 \right)$$
+$$M(t) = \mathrm{clamp}\left( 1.3 \cdot R_{\mathrm{sync}}(t) - 0.2, 0.0, 1.0 \right)$$
 
 * **$M \to 0$ (Low Coherence):** Frequency calculation snaps to 12-TET. Artificial comma beating is synthesized ($\epsilon = 0.007$).
 * **$M \to 1$ (High Coherence):** Frequencies glide to pure Just Intonation ratios. Beating dissolves into crystal stillness.
@@ -143,7 +143,7 @@ $$M(t) = \text{clamp}\left( 1.3 \cdot R_{\text{sync}}(t) - 0.2, 0.0, 1.0 \right)
 ### 2.3 Geodesic State-Space Navigation on the Static Torus Manifold
 Rather than rotating the coordinate frame itself, each of the four prefrontal nodes renders an immutable, static $\mathbb{T}^2$ wireframe, with the cognitive state trajectory moving across its surface as a tapered comet:
 
-$$\Theta_n = \left(\text{atan2}(ly_n, lx_n) + 2\pi\right) \pmod{2\pi}$$
+$$\Theta_n = \left(\mathrm{atan2}(ly_n, lx_n) + 2\pi\right) \pmod{2\pi}$$
 
 $$\Phi_n = \pi \cdot \sqrt{lx_n^2 + ly_n^2}$$
 
@@ -206,8 +206,8 @@ $$\text{Latch}(t) = \begin{cases} 1, & \text{if } ry_{Fpz}(t) > 0.8 \\ 0, & \tex
 * The entire audio synthesis graph is compiled into pure C++ via `torch.jit.script`.
 * **Zero-Crossing Gate Smoothing:** Eradicates step discontinuities on 16th-note boundaries:
 
-$$\tau = \text{phase}_{16\text{th}} \pmod{1.0}, \quad \text{Gate}(\tau) = \text{clamp}(30\tau, 0, 1) \cdot \text{clamp}(20(1 - \tau), 0, 1)$$
-  
+$$\tau = \mathrm{phase}_{16\mathrm{th}} \pmod{1.0}, \quad \mathrm{Gate}(\tau) = \mathrm{clamp}(30\tau, 0, 1) \cdot \mathrm{clamp}(20(1 - \tau), 0, 1)$$
+
 * **Stem Attenuation Washout:** Low-frequency stems (Kick and Bass) are attenuated at the oscillator stage rather than via block-edge FFT filtering, eliminating 43 Hz circular convolution framing buzz.
 * **Pinned Memory Ring-Buffering:** Host audio buffers are pre-allocated in page-locked pinned memory (`pin_memory=True`), allowing the `sounddevice` ALSA callback to read directly from a C pointer without Python interpreter intervention.
 
